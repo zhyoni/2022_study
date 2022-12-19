@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>끝말잇기</title>
+</head>
+
+<body>
+  <div><span id="order">1</span>번째 참가자</div>
+  <div>제시어: <span id="word"></span></div>
+  <input type="text">
+  <button>입력</button>
+  <p class="error"></p>
+  <script>
+    /*
+    몇명이참가하는지받고 턴을 넘길때마다 order+1 현재참가자는 1
+    처음 제시어 입력시 제시어가 있는지 없는지 확인 제시어가 없다면 새로운 제시어 입력
+    제시어가 있다면 제시어의 끝 단어와 새로운 제시어의 첫번째 단어가 동일한지 확인
+    동일하다면 기존 제시어에 새로운 제시어 넣고 화면 바꿔주기
+    제시어가 잘못되었다면 잘못되었다고 화면에 표시
+    */
+    const number = parseInt(prompt('몇 명이 참가하나요?'));
+    const $word = document.querySelector('#word');
+    const $input = document.querySelector('input');
+    const $button = document.querySelector('button');
+    const $error = document.querySelector('.error');
+    const $order = document.querySelector('#order');
+    let word; // 제시어
+    let newWord // 새로운 단어
+    const onClickButton = () => {
+      if (!word) { // 제시어가 없다면
+        word = newWord;
+        $word.textContent = word;
+        $input.value = '';
+      } else { // 제시어가 있다면
+        if (word[word.length - 1] === newWord[0]) {
+          word = newWord;
+          $word.textContent = word;
+          $input.value = '';
+          $input.focus();
+          $error.textContent = '';
+          const order = Number($order.textContent) // 현재 참가자
+          if (order === number) {
+            $order.textContent = 1;
+          } else {
+            $order.textContent = order + 1;
+          }
+        } else {
+          $error.textContent = '잘못된 단어 입니다.'
+          $input.value = '';
+          $input.focus();
+        }
+      }
+    };
+    const onInput = (event) => {
+      newWord = event.target.value;
+    };
+    $button.addEventListener('click', onClickButton);
+    $input.addEventListener('input', onInput);
+  </script>
+</body>
+
+</html>
