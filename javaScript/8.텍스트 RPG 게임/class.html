@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>class</title>
+</head>
+
+<body>
+  <script>
+    class Person {
+      constructor(name, age, html, css, js) {
+        this.name = name;
+        this.age = age;
+        this.html = html;
+        this.css = css;
+        this.js = js;
+      }
+
+      myName() {
+        console.log(`내 이름은 ${this.name} 입니다.`)
+      }
+      myAge() {
+        console.log(`나이는 ${this.age} 입니다.`)
+      }
+
+    }
+
+    class Programmer extends Person {
+      constructor(name, age, languages) {
+        super(name, age);
+        this.languages = languages;
+      }
+      writeCode() {
+        console.log(this.languages.join() + '(으)로 코딩해요.')
+      }
+    }
+    const programmer = new Programmer(
+      '효니',
+      32,
+      ['html', 'css', 'js']
+    );
+    programmer.writeCode();
+  </script>
+</body>
+
+</html>

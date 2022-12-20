@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>forEach/map/fill</title>
+</head>
+
+<body>
+  <script>
+    const answer = [3, 1, 4, 6];
+    answer.forEach((element, index) => {
+      console.log(element, index)
+    });
+
+    const array = [1, 2, 3, 4];
+    const result = [];
+    // for (let i = 0; i < 4; i++) {
+    //   result.push(array[i] * 2);
+    // }
+
+    array.map((element, index) => {
+      return result.push(element * 2);
+    })
+    console.log(result);
+    // console.log(array);
+
+    Array(45).fill(0).map((el, idx) => {
+      return console.log(idx + 1);
+    })
+  </script>
+</body>
+
+</html>

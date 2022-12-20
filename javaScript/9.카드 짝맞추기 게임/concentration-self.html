@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>카드 짝맞추기 게임(호출스택,태스크큐 이벤트 루프 분석 버그 해결하기)</title>
+  <style>
+    #wrapper {
+      width: 400px;
+    }
+
+    .card {
+      display: inline-block;
+      margin-right: 20px;
+      margin-bottom: 20px;
+      width: 70px;
+      height: 100px;
+      perspective: 140px;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front {
+      background: navy;
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 1px solid black;
+      backface-visibility: hidden;
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="wrapper"></div>
+  <script>
+    /* ## 순서도 그리기
+시작
+1. 카드 색을 랜덤하게 섞고 배치 Math.random()
+2. 일정 시간을 두고 뒤집어 앞면을 보여줌 timer
+3. 다시 뒷면으로 모두 뒤집는다. timer
+
+카드 클릭
+1. 카드를 뒤집고 클릭한 카드 배열에 추가
+2. if(2장이 되었나?)
+ no -> 대기
+3. yes -> if(두 카드의 뒷면의 색이 동일한가?)
+
+3-1. yes -> 완료 카드 배열로 넣음 -> if(모두 완료인가?) yes=> 1초 뒤에 축하합니다 메시지 표시 -> 끝 / no-> 대기
+3-1. no -> 1초 뒤에 두 카드를 뒷면으로 -> 대기
+
+## self체크
+게임이 끝나면 카드 짝을 맞추는 데 얼마나 걸렸는지 표시
+최대 20장까지 카드를 만들 수 있게 수정 게임 시작시 사용자로부터 전체 카드 개수를 입력받게 하자
+
+*/
+    const $wrapper = document.querySelector('#wrapper');
+    const total = parseInt(prompt('원하는 카드 개수를 짝수로 입력하세요 (최대20장)'));
+    const colors = [
+      'red', 'orange', 'yellow', 'green', 'white',
+      'hotpink', 'cyan', 'violet', 'gray', 'black',
+    ];
+    let colorSlice = colors.slice(0, total / 2);
+    let colorCopy = colorSlice.concat(colorSlice);
+    let shuffled = [];
+    let clicked = [];
+    let completed = [];
+    let clickable = false;
+    let startTime;
+
+    function shuffle() { // 피셔-예이츠 셔플
+      for (let i = 0; colorCopy.length > 0; i += 1) {
+        const randomIndex = Math.floor(Math.random() * colorCopy.length);
+        shuffled = shuffled.concat(colorCopy.splice(randomIndex, 1));
+      }
+    }
+
+    function createCard(i) { // div.card > div.card-inner > (div.card-front + div.card-back)
+      const card = document.createElement('div');
+      card.className = 'card'; // .card 태그 생성
+      const cardInner = document.createElement('div');
+      cardInner.className = 'card-inner'; // .card-inner 태그 생성
+      const cardFront = document.createElement('div');
+      cardFront.className = 'card-front'; // .card-front 태그 생성
+      const cardBack = document.createElement('div');
+      cardBack.className = 'card-back'; // .card-back 태그 생성
+      cardBack.style.backgroundColor = shuffled[i];
+      cardInner.appendChild(cardFront);
+      cardInner.appendChild(cardBack);
+      card.appendChild(cardInner);
+      return card;
+    }
+
+    function onclickCard() {
+      if (!clickable || completed.includes(this) || clicked[0] === this) { // 뒤집히는 동안 클릭 막기||이미 완성된 카드 클릭 막기 || 내가 방금 클릭한카드 막기(두번연달아클릭막기)
+        return;
+      }
+      this.classList.toggle('flipped');
+      clicked.push(this);
+      if (clicked.length !== 2) { // 두장이 아니라면
+        return;
+      }
+      const firstBackColor = clicked[0].querySelector('.card-back').style.backgroundColor;
+      const secondBackColor = clicked[1].querySelector('.card-back').style.backgroundColor;
+      if (firstBackColor === secondBackColor) { // 두 카드의 뒷면의 색이 동일한가?
+        completed.push(clicked[0]);
+        completed.push(clicked[1]);
+        clicked = [];
+        // completed = completed.concat(clicked);
+        if (completed.length !== total) {
+          return;
+        }
+        const endTime = new Date();
+        setTimeout(() => {
+          alert(`축하합니다! ${(endTime - startTime) / 1000}초 걸렸습니다.`);
+          resetGame();
+        }, 1000);
+        return;
+      }
+      clickable = false; //  카드 뒤집힌 상태에서 네장이 클릭되는 오류 현상
+      // 동일하지 않다면
+      setTimeout(() => {
+        clicked[0].classList.remove('flipped');
+        clicked[1].classList.remove('flipped');
+        clicked = [];
+        clickable = true; // 카드 뒤집힌 상태에서 네장이 클릭되는 오류 현상
+      }, 800)
+    }
+
+    function startGame() {
+      startTime = new Date();
+      clickable = false;
+      shuffle();
+      for (let i = 0; i < total; i++) {
+        const card = createCard(i); // 카드 생성
+        card.addEventListener('click', onclickCard);
+        $wrapper.appendChild(card);
+      }
+
+      document.querySelectorAll('.card').forEach((card, index) => { // 초반 카드 공개
+        setTimeout(() => {
+          card.classList.add('flipped');
+        }, 1000 + 100 * index);
+      });
+
+      setTimeout(() => { // 카드 감추기
+        document.querySelectorAll('.card').forEach((card) => {
+          card.classList.remove('flipped');
+        });
+        clickable = true;
+        startTime = new Date();
+      }, 5000);
+    }
+    startGame();
+
+    function resetGame() {
+      $wrapper.innerHTML = '';
+      colorCopy = color.concat(colors);
+      let shuffled = [];
+      let completed = [];
+      startGame();
+    }
+
+    // 백그라운드(타이머, 이벤트 리스너), 
+    // 태스크 큐(타이머나 이벤트리스너 콜백함수들)
+    // 이벤트 루프(호출스택이 비어있을때 태스크 큐에 있는 이벤트들 하나씩 꺼내주는 역할),
+    // 호출 스택(함수들이 실행되는 공간),
+
+
+    // 백스라운드는 타이머를 처리하고 이벤트 리스너를 저장하는 공간입니다. setTimeout같은 함수가 실행되면 백스라운드에서 시간을 재고 시간이 되면 setTimeout의 콜백 함수를 태스크 큐로 보냅니다. 또한, addEventListener로 추가한 이벤트를 저장했다가 이벤트가 발생하면 콜백 함수를 태스크 큐로 보냅니다. 백그라운드에서 코드를 실행하는 것이 아니라 실행될 콜백 함수들이 태스크 큐로 들어간다는 것을 기억하세요.
+
+    // 태스크 큐는 실행되야 할 콜백 함수들이 줄을 서서 대기하고 있는 공간입니다. queue라는 단어가 줄이라는 뜻입니다. 사람들이 가게 앞에 줄을 서면 먼저 선 사람부터 차례로 들어가죠? 태스크 큐도 마찬가지입니다. 태스크 큐에 먼저 들어온 함수부터 실행됩니다. 다만, 태스크 큐도 함수를 직접 실행하지 않습니다. 함수는 모두 호출 스택에서만 실행됩니다. 호출 스택에 들어온 함수가 호출(실행)된다고 생각하면 됩니다. 
+
+    // 태스크 큐에서 호출 스택으로 함수를 이동시키는 존재가 바로 이벤트 루프 입니다. 호출 스택이 비어 있으면 이벤트 루프는 태스크 큐에서 함수를 하나씩 꺼내(들어온 순서로 꺼내겠죠?) 호출스택으로 옮깁니다. 호출 스택으로 이동한 함수는 그제서야 실행됩니다. 실행이 완료된 함수는 호출 스택에서 빠져나가게 되고, 호출 스택이 비면 이벤트 루프는 태스크 큐에 있는 다음 함수를 호출 스택으로 옮깁니다.
+
+    // 자바스크립트 엔진은 자바스크립트 소스 코드가 처음 실행되는 순간도 하나의 함수가 실행된다고 봅니다. 크롬은 이를 anonymous라는 함수로 표시합니다.
+    // 다음 코드로 anonymous 함수의 존재를 파악할 수 있습니다.
+    function a() {
+      b();
+    }
+    function b() {
+      console.trace(); // 함수의 호출 스택을 보여주는 메서드 입니다.
+    }
+    a();
+    // anonymous호출 -> a호출 > b호출 ->  console.trace()호출
+
+    {
+      function aaa() {
+        setTimeout(() => {
+          console.log('d');
+        }, 0);
+        console.log('c');
+      }
+
+      setTimeout(() => {
+        console.log('a');
+        aaa();
+      }, 0);
+
+      setTimeout(() => {
+        aaa();
+        console.log('b');
+      }, 0);
+
+      // 호출스택:   
+      // 백그라운드:
+      // 태스크큐:
+      // 콘솔:
+
+      /*
+      1. 호출스택 anonymous -> setTimeout1 -> setTimeout2
+      2. 백그라운드: timer1-0초 (호출스택setTimeout1지워줌) timer2-0초(호출스택setTimeout2지워줌) 
+      3. anonymous까지 지워줌. 호출스택 모두 비어있음 
+      4. 호출스택 
+      백그라운드:  aaa() aaa()
+    
+      //result: a c c b d d
+      호출스택과 이벤트 루프: https://www.zerocho.com/category/JavaScript/post/597f34bbb428530018e8e6e2
+      실행컨텍스트: https://www.zerocho.com/category/JavaScript/post/5741d96d094da4986bc950a0
+      함수의 범위: https://www.zerocho.com/category/JavaScript/post/5740531574288ebc5f2ba97e
+      (렉시컬 스코핑 중요!)
+      */
+    }
+
+
+  </script>
+</body>
+
+</html>

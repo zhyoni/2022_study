@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>지뢰찾기</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    td {
+      border: 1px solid #bbb;
+      text-align: center;
+      line-height: 20px;
+      width: 20px;
+      height: 20px;
+      background: #888;
+    }
+
+    td.opened {
+      background: #fff;
+    }
+
+    td.flag {
+      background: red;
+    }
+
+    td.question {
+      background: orange;
+    }
+  </style>
+</head>
+
+<body>
+  <table id="table">
+    <tbody></tbody>
+  </table>
+  <div id="result"></div>
+  <script>
+    // 순서도가 짧은 것 부터 구현 
+    // 테이블을 생성하는 절차
+    // 칸을 좌클릭하는 절차
+    // 우클릭하는 절차
+    /*
+        1. 시작-> 가로,세로 수에 따라 테이블 생성 -> 칸에 랜덤하게 지뢰 심기 -> 대기
+        2. 칸 좌클릭 => 물음표나 깃발이 있는가? 
+        예 -> 대기  
+        아니오 -> 폭탄인가?  
+            예 -> 펑 하고 게임을 끝낸다. -> 끝
+            아니오 -> 칸을 열고 주변 칸의 개수를 표시 -> 주변 칸 수가 0인가?
+                    예-> 옆 칸을 같이 열 수 있으면 연다 / 아니오 -> 대기
+                    -> 모든 칸을 다 열었나
+                          예 -> 이겼다고 표시 -> 끝
+                                                        아니오 -> 대기
+      
+      3. 칸 우클릭 => 이미 열린 칸인가?
+                      예 -> 대기
+                      아니오 -> 물음표 칸인가?
+                                예 -> 깃발로 전환 -> 대기
+                                아니오 -> 깃발 칸인가?
+                                          예 -> 닫힌 칸으로 전환 -> 대기
+                                          아니오 -> 물음표로 전환 -> 대기
+    우클릭 이벤트 contextmenu이벤트가 따로 존재. 단, 브라우저 화면에서는 우클릭하면 메뉴가 뜨는 기본 동작이 있다. 이 기본 동작을 없애야(preventDefault)우클릭이 원하는 대로 동작한다.
+    
+    # 칸 상태에 따른 코드
+      열린 칸                  0~8               OPENED
+      닫힌 칸(지뢰X)            -1               NORMAL
+      물음표 칸(지뢰X)          -2               QUESTION
+      깃발 칸(지뢰X)            -3               FLAG 
+      물음표 칸(지뢰 O)         -4               QUESTION_MINE
+      깃발 칸(지뢰 O)           -5               FLAG_MINE
+      닫힌 칸(지뢰 O)           -6               MINE   
+    
+    */
+
+    const $tbody = document.querySelector('#table tbody');
+    const $result = document.querySelector('#result');
+    const row = 10; // 줄
+    const cell = 10; // 칸
+    const mine = 10; // 지뢰
+    const CODE = {
+      NORMAL: -1, // 닫힌 칸(지뢰 없음)
+      QUESTION: -2, // 물음표 칸(지뢰 없음)
+      FLAG: -3, // 깃발 칸(지뢰 없음)
+      QUESTION_MINE: -4, // 물음표 칸(지뢰 있음)
+      FLAG_MINE: -5, // 깃발 칸(지뢰 있음)
+      MINE: -6, // 닫힌 칸(지뢰 있음)
+      OPENED: 0, // 0 이상이면 모두 다 열린 칸
+    }
+    let data;
+
+    function plantMine() {
+      const candidate = Array(row * cell).fill().map((arr, i) => {
+        return i;
+      });
+      const shuffle = []; // 지뢰를 심을 랜덤한 칸 10개가 담길 배열
+      while (candidate.length > row * cell - mine) { // 100 > 90
+        const chosen = candidate.splice(Math.floor(Math.random() * candidate.length), 1)[0];
+        shuffle.push(chosen);
+      }
+      const data = [];
+      for (let i = 0; i < row; i++) {
+        const rowData = [];
+        data.push(rowData);
+        for (let j = 0; j < cell; j++) {
+          rowData.push(CODE.NORMAL);
+        }
+      }
+
+      for (let k = 0; k < shuffle.length; k++) {
+        const ver = Math.floor(shuffle[k] / cell);
+        const hor = shuffle[k] % cell;
+        data[ver][hor] = CODE.MINE;
+      }
+      return data;
+    };
+
+    // NORMAL: -1, // 닫힌 칸(지뢰 없음)//
+    //   QUESTION: -2, // 물음표 칸(지뢰 없음)//
+    //   FLAG: -3, // 깃발 칸(지뢰 없음)
+    //   QUESTION_MINE: -4, // 물음표 칸(지뢰 있음) //
+    //   FLAG_MINE: -5, // 깃발 칸(지뢰 있음) //
+    //   MINE: -6, // 닫힌 칸(지뢰 있음) //
+    //   OPENED: 0, // 0 이상이면 모두 다 열린 칸
+    function onRightClick(event) {
+      event.preventDefault();
+      const target = event.target; // 우클릭이 발생한 곳 $td
+      const rowIndex = target.parentNode.rowIndex; // tr에는 rowIndex가 들어있다.
+      const cellIndex = target.cellIndex; // td에는 cellIndex가 들어있다.
+      const cellData = data[rowIndex][cellIndex]; // 몇번째 칸 몇번째 줄 클릭했는지 알아내기위해
+      if (cellData === CODE.MINE) { // 지뢰면
+        data[rowIndex][cellIndex] = CODE.QUESTION_MINE; // 물음표 지뢰로
+        target.className = 'question';
+        target.textContent = '?';
+      } else if (cellData === CODE.QUESTION_MINE) { // 물음표 지뢰면
+        data[rowIndex][cellIndex] = CODE.FLAG_MINE; // 깃발 지뢰로
+        target.className = 'flag';
+        target.textContent = '!';
+      } else if (cellData === CODE.FLAG_MINE) { // 깃발 지뢰면
+        data[rowIndex][cellIndex] = CODE.MINE; // 지뢰로
+        target.className = '';
+        target.textContent = 'X';
+      } else if (cellData === CODE.NORMAL) { // 닫힌 칸이면
+        data[rowIndex][cellIndex] = CODE.QUESTION; // 물음표로
+        target.className = 'question';
+        target.textContent = '?';
+      } else if (cellData === CODE.QUESTION) { // 물음표면
+        data[rowIndex][cellIndex] = CODE.FLAG; // 깃발으로
+        target.className = 'flag';
+        target.textContent = '!';
+      } else if (cellData === CODE.FLAG) { // 깃발이면
+        data[rowIndex][cellIndex] = CODE.NORMAL; // 닫힌 칸으로
+        target.className = '';
+        target.textContent = '';
+      }
+    }
+
+    //includes() 메서드는 배열이 특정 요소를 포함하고 있는지 판별
+    // 1 2 3
+    // 4 5 6
+    // 7 8 9
+    // 앞 부분이 존재하면 && 뒷 부분을 실행해라        앞부분이true면 && 뒷 부분 실행해라
+    // 앞 부분이 존재하지 않으면 || 뒷 부분을 실행해라  앞부분이 false면 || 뒷 부분 실행해라
+    //data[-1][-1]하면 error / data[-1]하면 undifined
+    // if(data[-1]){data[-1][-1]} undifined
+    // data[-1]?.[-1] 배열에 사용하는 보호 연산자 ?.
+    //옵셔널 체이닝(optional chaining) ?. 프로퍼티가 없는 중첩 객체를 에러 없이 안전하게 접근할 수 있다.
+    function countMine(rowIndex, cellIndex) { // 주변 지뢰 갯수 세기
+      const mines = [CODE.MINE, CODE.QUESTION_MINE, CODE.FLAG_MINE]; // -6 -5 -4가 들어있으면 
+      let i = 0;
+      mines.includes(data[rowIndex - 1]?.[cellIndex - 1]) && i++; // true가 되면 1을 더해라 //1
+      mines.includes(data[rowIndex - 1]?.[cellIndex]) && i++; //2
+      mines.includes(data[rowIndex - 1]?.[cellIndex + 1]) && i++; //3
+      mines.includes(data[rowIndex][cellIndex - 1]) && i++; //4
+      mines.includes(data[rowIndex][cellIndex + 1]) && i++; //6
+      mines.includes(data[rowIndex + 1]?.[cellIndex - 1]) && i++; //7
+      mines.includes(data[rowIndex + 1]?.[cellIndex]) && i++; //8
+      mines.includes(data[rowIndex + 1]?.[cellIndex + 1]) && i++; //9
+      return i;
+    }
+
+    function onLeftClick(event) {
+      event.preventDefault();
+      const target = event.target;
+      const rowIndex = target.parentNode.rowIndex;
+      const cellIndex = target.cellIndex;
+      const cellData = data[rowIndex][cellIndex];
+      if (cellData === CODE.NORMAL) { // 닫힌 칸이면
+        const count = countMine(rowIndex, cellIndex); // 지뢰 갯수 세기
+        target.textContent = count || ''; // count가 없으면 '' // 숫자 0일때 ''
+        //Nullish coalescing operator 널 병합 연산자 (??) 는 왼쪽 피연산자가 null 또는 undefined일 때 오른쪽 피연산자를 반환하고, 그렇지 않으면 왼쪽 피연산자를 반환하는 논리 연산자이다. count ?? ''; <-이 경우 0이 반환됨
+        // 0 ?? ''(null undifined아니면 앞에꺼 해라) / null ?? ''(null이나 undifined면 뒤에꺼 해라)
+        target.className = 'opened';
+        data[rowIndex][cellIndex] = count;
+      } else if (cellData === CODE.MINE) { // 지뢰 칸이면
+        target.textContent = '펑'
+        target.className = 'opened';
+        $tbody.removeEventListener('contextmenu', onRightClick);
+        $tbody.removeEventListener('click', onLeftClick);
+      } // 나머지는 무시
+      // 아무 동작도 안함
+    }
+
+    function drawTable() {
+      data = plantMine();
+      data.forEach((row) => {
+        const $tr = document.createElement('tr');
+        row.forEach((cell) => {
+          const $td = document.createElement('td');
+          if (cell === CODE.MINE) {
+            $td.textContent = 'X'; // 개발 편의를 위해
+          }
+          $tr.append($td);
+        });
+        $tbody.append($tr);
+        $tbody.addEventListener('contextmenu', onRightClick); // 우클릭 이벤트
+        $tbody.addEventListener('click', onLeftClick); // 좌클릭 이벤트
+      });
+    };
+    drawTable();
+  </script>
+</body>
+
+</html>

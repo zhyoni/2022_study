@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이차원 배열 다루기 틱택토 게임</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    td {
+      border: 1px solid #000;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    //TODO: 당장 구현하기 어려운 일 / 추후 해야할 일 / 더 좋은 이름으로 바꾸기 등
+    // FIXME: 문제는 있는데 당장 수정할 필요는 없어서 남길때 
+    // XXX: 더 생각해볼 필요가 있는 항목
+
+    // 3*3 이차원 배열을 준비한다.
+    // 0을 턴으로 설정한다.
+    // 3*3 테이블을 그린다.
+
+    // 칸을 클릭한다.
+    // 클릭한 칸이 비어있는가? -> no -> 대기
+    // yes -> 현재턴을 칸에 적어 넣는다. -> 승부가 났는가?  yes -> 승자를 표시한다.
+    // no -> 무승부인가?  yes -> 무승부라고 표시한다 -> 끝 /  no -> 턴을 넘긴다. -> 대기 
+
+    // ## 구조분해 할당
+    // const arr = [1,2,3,4,5];
+    // const one = arr[0];
+    // const three = arr[2];
+    // const five = arr[4];
+    // const [one,,three,,five] = arr;
+
+    // const obj = [a:1,b:2];
+    // const [a,b] = obj; // 다음 두 줄을 이렇게 한 줄로 표현 가능
+    // const a = obj.a
+    // const b = obj.b
+
+    // const obj = {
+    //   a: 'hello',
+    //   b: {
+    //     c: 'hi',
+    //     d: { e: 'wow' }
+    //   }
+    // };
+    // const { a, b: { c, d: { e } } } = obj;
+    // const a = obj.a;
+    // const c = obj.b.c;
+    // const e = obj.b.d.e;
+
+    const { body } = document; // === const body = document.body; 
+
+    const $table = document.createElement('table');
+    const $result = document.createElement('div');
+    const rows = [];
+    let turn = 'O';
+
+    // rows
+    // [
+    // [td, td, td]
+    // [td, td, td]
+    // [td, td, td]
+    //]
+
+    const checkWinner = (target) => {
+      let rowIndex;
+      let cellIndex;
+      rows.forEach((row, ri) => {
+        row.forEach((cell, ci) => {
+          if (cell === target) {
+            rowIndex = ri; // 몇번째 줄 
+            cellIndex = ci; // 몇번째 칸
+          }
+        })
+      });
+      // 세 칸 다 채워졌나?
+      let hasWinner = false; // 검사할때는 처음에 false로 시작하면 된다. 다채워졌으면 true
+      // 가로줄 검사
+      if (
+        rows[rowIndex][0].textContent === turn &&
+        rows[rowIndex][1].textContent === turn &&
+        rows[rowIndex][2].textContent === turn
+      ) {
+        hasWinner = true;
+      }
+      // 세로줄 검사
+      if (
+        rows[0][cellIndex].textContent === turn &&
+        rows[1][cellIndex].textContent === turn &&
+        rows[2][cellIndex].textContent === turn
+      ) {
+        hasWinner = true;
+      }
+      // 대각선 검사
+      // 0줄 0번째 1줄 1번째 2줄 2번째
+      // 1줄 2번째 1줄 1번째 2줄 0번째
+      if (
+        rows[0][0].textContent === turn &&
+        rows[1][1].textContent === turn &&
+        rows[2][2].textContent === turn
+      ) {
+        hasWinner = true;
+      }
+      if (
+        rows[0][2].textContent === turn &&
+        rows[1][1].textContent === turn &&
+        rows[2][0].textContent === turn
+      ) {
+        hasWinner = true;
+      }
+      return hasWinner; // 승자가 있으면 return true 승자가 없으면 return false 반환
+    };
+
+
+    const callback = (event) => {
+      // event.stopPropagetion(); // event 버블링 막기 // 이벤트 발생하지 않게 하는 것.
+      // 이벤트 캡처링 (ex.보통 팝업 밖에서 클릭했을때 팝업 닫히게 할때 사용)
+      // 부모태그에서 자식태그로 버블링 
+
+      // 칸에 글자가 있나?
+      // if (event.target.textContent) return; // 조건에 해당이 안되면 종료
+      // event.target.textContent = turn;
+      if (event.target.textContent !== '') { // 칸이 이미 채워져 있는가?
+        console.log('빈칸이 아닙니다.');
+        return;
+        // event.target // => $td
+        // event.currentTarget // 무조건 이벤트를 걸어준 target => $table 
+      }
+      // 빈칸이면
+      console.log('빈칸입니다.');
+      event.target.textContent = turn;
+
+      // 승부 판단하기
+      if (checkWinner(event.target)) {
+        $result.textContent = `${turn}님이 승리!`;
+        $table.removeEventListener('click', callback); // 승리했을때 클릭되지 않게.
+        return;
+      }
+      // 무승부 검사
+      let draw = true; // 무승부라고 생각을 하고
+      rows.forEach((row) => {
+        row.forEach((cell) => {
+          if (!cell.textContent) { // 한칸이라도 비어있으면
+            draw = false; // 무승부가 아님
+          }
+        })
+      });
+      if (draw) { // 칸이 꽉 찾으면 true
+        $result.textContent = '무승부!';
+        return;
+      }
+      // 승부 확인
+      turn = turn === 'O' ? 'X' : 'O'; // turn이 'O'면 'X'로 바꾸고 'O'가 아니면('X'면) 'O'로 바꾼다.
+      // if (turn === 'O') {
+      //   turn = 'X';
+      // } else if (turn === 'X') {
+      //   turn = 'O';
+      // }
+    };
+
+    for (let i = 0; i < 3; i++) { // 줄
+      const $tr = document.createElement('tr');
+      const cells = [];
+      for (let j = 0; j < 3; j++) { // 칸
+        const $td = document.createElement('td');
+        cells.push($td);
+        // $td.addEventListener('click', callback); // 클릭이벤트 버블링 현상때문에 부모태그에 이벤트를 달아준다. (부모태그따라서 버블링 html현상)
+        $tr.append($td);
+      }
+      rows.push(cells);
+      $table.append($tr);
+    }
+    $table.addEventListener('click', callback);
+    // $table.addEventListener('click', callback, true);기본값 false true를 명시해주면 이벤트캡처링이 된다.
+    body.append($table);
+    body.append($result);
+
+
+    {
+      // 이차원 배열 (배열 안에 배열이 들어있는 형태)
+      const array = [];
+      for (let i = 0; i < 5; i++) {
+        const innerArray = [];
+        for (let j = 0; j < 4; j++) {
+          innerArray.push(1);
+        }
+        array.push(innerArray);
+      }
+      console.log(array);
+    }
+
+  </script>
+</body>
+
+</html>

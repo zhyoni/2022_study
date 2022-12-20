@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bubbling</title>
+</head>
+
+<body>
+  <header>
+    <div>
+      <button>클릭</button>
+    </div>
+  </header>
+  <script>
+    // 버튼을 클릭할 때 'hello', event bubbling을 alert하게 다음 코드를 수정하세요. 이벤트리스너를 button태그에 달아서는 안 됩니다.
+    const { body } = document;
+    const $header = document.querySelector('header');
+    const $div = document.querySelector('div');
+    $header.addEventListener('click', () => {
+      alert('hello event bubbling')
+    })
+  </script>
+</body>
+
+</html>
