@@ -25,7 +25,8 @@
 ##### study
 * 고차함수 / if문 중첩 줄이기 [study01.md](javaScript/study01.md)
 * 이벤트 버블링 [bubbling.html](javaScript/7.틱택토%20게임/bubbling.html)
-* forEach(),map(),fill() [study02.md](javaScript/study02.md)
+* Math.random() / 배열(new Set, includes, join, split) [study03.md](javaScript/study03.md)
+* forEach, map, fill [study03.md](javaScript/study03.md)
   
 
 
