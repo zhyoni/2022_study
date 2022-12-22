@@ -5,7 +5,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>숫자야구</title>
+  <title>숫자야구 아웃 만들기</title>
+  <style>
+    .red {
+      color: red;
+    }
+  </style>
 </head>
 
 <body>
@@ -25,7 +30,6 @@
     for (let n = 0; n < 9; n++) { //[1,2,3,4,5,6,7,8,9]
       numbers.push(n + 1)
     }
-
     // 랜덤으로 숫자 4개 뽑기
     const answer = [];
     for (let i = 0; i <= 3; i++) {
@@ -59,7 +63,14 @@
     } // 검사하는 코드
     // return undifined이지만 if문안에 들어가면 return false가 된다.
 
+    function defeated() {
+      const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
+      $logs.classList.add('red');
+      $logs.append(message);
+    }
+
     // form,a태그의 기본동작: 새로고침
+    let out = 0;
     $form.addEventListener('submit', (event) => {
       event.preventDefault();
       const value = $input.value; // == event.target[0].value
@@ -75,13 +86,12 @@
         return;
       }
       if (tries.length >= 9) { // 10번 시도했는가?
-        const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
-        $logs.appendChild(message);
+        defeated();
         return;
       }
       // 몇 스트라이크 몇 볼인지 검사
-      let strike = 0;
-      let ball = 0;
+      let strike = 0; // 숫자와 자릿수까지 모두 맞추면 strike 
+      let ball = 0; // 숫자만 맞추면 ball
       // answer: 3146, value: 1347
       for (let i = 0; i < answer.length; i++) {
         const index = value.indexOf(answer[i]);
@@ -93,7 +103,17 @@
           }
         }
       }
-      $logs.append(`${value}: ${strike} 스트라이크 ${ball} 볼`, document.createElement('br'))
+      // 0 볼 0스트라이크인가?
+      if (strike === 0 && ball === 0) { // 예
+        out++;
+        $logs.append(`${value}: ${out}아웃!`, document.createElement('br'));
+      } else { // 아니오
+        $logs.append(`${value}: ${strike} 스트라이크 ${ball} 볼`, document.createElement('br'));
+      }
+      if (out === 3) { // 세 번 아웃 되었나?
+        defeated();
+        return;
+      }
       tries.push(value);
     })
   </script>

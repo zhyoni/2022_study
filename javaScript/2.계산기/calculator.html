@@ -92,8 +92,8 @@
       }
       numTwo += event.target.textContent;
       $result.value += event.target.textContent;
-
     };
+
     const onClickOperator = (op) => () => {
       if (numOne) {
         operator = op;
@@ -111,6 +111,9 @@
     document.querySelector('#num-7').addEventListener('click', onClickNumber);
     document.querySelector('#num-8').addEventListener('click', onClickNumber);
     document.querySelector('#num-9').addEventListener('click', onClickNumber);
+
+    // const a = (event)=>{console.log(event.target)}
+
     document.querySelector('#plus').addEventListener('click', onClickOperator('+'));
     document.querySelector('#minus').addEventListener('click', onClickOperator('-'));
     document.querySelector('#divide').addEventListener('click', onClickOperator('/'));

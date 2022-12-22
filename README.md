@@ -8,6 +8,7 @@
 * calculator (계산기) [calculator.html](javaScript/계산기/calculator.html) 
 * calculator (계산기:연달아계산하기) [calculator_self.html](javaScript/계산기/연달아%20계산하기/calculator_self.html) 
 * number_baseball (숫자야구 게임) [number_baseball.html](javaScript/3.숫자야구%20게임/number_baseball.html) 
+  * number_baseball (아웃 만들기) [number_baseball_self.html](javaScript/3.숫자야구%20게임/아웃%20만들기/number_baseball_self.html) 
 * lotto (로또 추첨기) [lotto.html](javaScript/4.로또%20추첨기/lotto.html) 
 * rap (가위바위보 게임) [rsp.html](javaScript/5.가위바위보%20게임/rsp.html) 
 * response-check (반응속도 테스트) [response-check.html](javaScript/6.반응속도%20테스트/response-check.html) 
@@ -25,7 +26,7 @@
 ##### study
 * 고차함수 / if문 중첩 줄이기 [study01.md](javaScript/study01.md)
 * 이벤트 버블링 [bubbling.html](javaScript/7.틱택토%20게임/bubbling.html)
-* Math.random() / 배열(new Set, includes, join, split) [study03.md](javaScript/study03.md)
+* Math.random() / 배열(new Set, includes, join, split,splice) [study02.md](javaScript/study02.md)
 * forEach, map, fill [study03.md](javaScript/study03.md)
   
 
