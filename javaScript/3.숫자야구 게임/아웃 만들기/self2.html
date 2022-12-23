@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>숫자야구게임 self</title>
+  <style>
+    #logs.home-run {
+      color: rgb(13, 0, 128);
+      font-weight: bold;
+    }
+
+    #logs.defeated {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <form id="form">
+    <input type="text">
+    <button>확인</button>
+  </form>
+  <div id="logs"></div>
+  <script>
+    const $form = document.querySelector('#form');
+    const $logs = document.querySelector('#logs');
+
+    let numbers = []; // 1~9
+    for (let n = 0; n < 9; n++) {
+      numbers.push(n + 1);
+    }
+
+    // 랜덤한 숫자 4개 
+    let answer = [];
+    for (let n = 0; n <= 3; n++) {
+      const index = Math.floor(Math.random() * numbers.length);
+      answer.push(numbers[index]);
+      numbers.splice(index, 1);
+    }
+    console.log(answer);
+
+    let tries = []; // 시도했던 값 넣을 배열
+    function checkInput(input) {
+      // input의 값의 길이가 4인가?
+      if (input.length !== 4) {
+        alert('4자리를 입력해 주세요.')
+        return
+      }
+      // input의 값이 중복된 값인가?
+      if (new Set(input).size !== 4) {
+        alert('중복된 값 입니다.')
+        return
+      }
+      // input의 값이 이미 시도한 값인가?
+      if (tries.includes(input)) {
+        alert('이미 시도한 값 입니다.')
+        return
+      }
+      return true;
+    }
+
+    function defeated() {
+      const message = document.createTextNode(`패배! 정답은 ${answer.join('')} 입니다.`);
+      $logs.appendChild(message);
+      $logs.classList.add('defeated');
+    }
+    let out = 0;
+    $form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      let value = event.target[0].value;
+      event.target[0].value = '';
+
+      // 답이 형식에 맞는지 검사하는 함수
+      if (!checkInput(value)) {
+        //false
+        return;
+      }
+      // true
+      // 홈런인가? 사용자가 입력한 값과 정답이 동일한가?
+      if (value === answer.join('')) {
+        $logs.textContent = '홈런!!';
+        $logs.classList.add('home-run');
+        return;
+      }
+      // 10번 시도했는가?
+      if (tries.length >= 9) {
+        defeated();
+        return;
+      }
+      let strike = 0;
+      let ball = 0;
+      answer.forEach((el, i) => {
+        const index = value.indexOf(el);
+        if (index > -1) { // 숫자가 있다
+          if (index === i) { // index와 숫자가 모두 일치
+            strike += 1;
+          } else {
+            ball += 1;
+          }
+        }
+      });
+      if (strike === 0 && ball === 0) {
+        out++;
+        $logs.append(`${value}: ${out} 아웃!`)
+      } else {
+        $logs.append(`${value}: ${strike} 스트라이크 ${ball} 볼`, document.createElement('br'))
+      }
+
+      if (out === 3) {
+        defeated();
+        return;
+      }
+
+      tries.push(value);
+
+    })
+  </script>
+</body>
+
+</html>

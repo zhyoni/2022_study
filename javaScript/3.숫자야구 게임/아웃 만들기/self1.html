@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>숫자야구게임 self</title>
+</head>
+
+<body>
+  <form id="form">
+    <input type="text" id="input">
+    <button>확인</button>
+  </form>
+  <div id="logs"></div>
+  <script>
+    // 시작 numbers변수에 1~9까지 숫자 넣어놓음
+    // answer변수에 랜덤한 숫자 4자리 넣음 (answer이 정답)
+    // $form submit이벤트 새로고침 기능 막아주고
+    // $input.value값 넣어둘 value변수
+    // 변수에 저장했으면 $input에 있는 값 제거해주기
+    // 답이 형식에 맞는지 검사한다.
+    //  답이 아닌경우 경고창을 띄워줘야 하기때문에 아닐경우를 if문으로 
+    // 사용자가 $input에 입력한 값이 4자리가 아닌가?
+    // 사용자가 $input에 입력한 값이 중복되는 값인가? new Set()
+    // 사용자가 $input에 입력한 값이 이미 시도한 값은 아닌가?
+    // 모두 true면 홈런인지 검사 false면 10번 시도했는지 검사
+    // 10번 모두 시도했는가? 
+    // 몇 볼 몇 스트라이크인지 검사 
+
+    const $input = document.querySelector('#input');
+    const $form = document.querySelector('#form');
+    const $logs = document.querySelector('#logs');
+
+    let numbers = [];
+    for (let n = 0; n < 9; n++) { //[1, 2, 3, 4, 5, 6, 7, 8, 9]
+      numbers.push(n + 1);
+    }
+
+    // 숫자 4개를 뽑는다
+    let answer = [];
+    for (let n = 0; n <= 3; n++) {
+      const index = Math.floor(Math.random() * numbers.length);
+      answer.push(numbers[index]);
+      numbers.splice(index, 1);
+    }
+    console.log(answer);
+
+    function defeated() {
+      const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
+      $logs.appendChild(message);
+    }
+
+    let tries = []; // 시도한 값 넣을 빈배열 만들기
+    function checkInput(value) {
+      if (value.length !== 4) { // 입력한 값이 아닌가?
+        alert('4자리의 숫자를 입력해주세요.');
+      } else if (new Set(value).size !== 4) { // 입력한 값이 중복되는 값인가?
+        alert('중복되는 값 입니다.')
+      } else if (tries.includes(value)) { // 이미 시도한 값이 아닌가? 
+        alert('이미 시도한 값 입니다.')
+      }
+      return true;
+    }
+    let out = 0;
+    $form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const value = $input.value;
+      $input.value = '';
+      if (!checkInput(value)) {
+        return;
+      }
+      // 홈런인지 검사
+      if (value === answer.join('')) {
+        $logs.textContent = `홈런!!`;
+        return;
+      }
+      // 10번 시도했는가?
+      if (tries.length >= 9) {
+        defeated();
+        return;
+      }
+      // 몇 스트라이크 몇 볼인지 검사
+      let strike = 0;
+      let ball = 0;
+      // 숫자는 있는데 자리가 다르면 ball += 1 // 숫자랑 자리가 같으면 strike += 1
+      answer.forEach((el, i) => {
+        const index = value.indexOf(el);
+        if (index > -1) {
+          if (index === i) {
+            strike += 1;
+          } else {
+            ball += 1;
+          }
+        }
+      })
+      // 0볼 0스트라이크인가?
+
+      if (strike === 0 && ball === 0) {
+        out++;
+        $logs.append(`${value}: ${out}아웃!`, document.createElement('br'));
+      } else {
+        $logs.append(`${value}: ${strike} 스트라이크 ${ball} 볼`, document.createElement('br'));
+      }
+      if (out === 3) {
+        defeated();
+        return;
+      }
+      tries.push(value);
+    })
+  </script>
+</body>
+
+</html>

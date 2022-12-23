@@ -57,7 +57,7 @@
       }
       return true // 검증을 모두 통과하면 retunr true
     } // 검사하는 코드
-    // return undifined이지만 if문안에 들어가면 return false가 된다.
+    // alert의 return값은 undifined이지만 if문안에 들어가면 return false가 된다.
 
     // form,a태그의 기본동작: 새로고침
     $form.addEventListener('submit', (event) => {
@@ -83,8 +83,9 @@
       let strike = 0;
       let ball = 0;
       // answer: 3146, value: 1347
+      // 숫자는 있는데 자리가 다르면 ball += 1 // 숫자랑 자리가 같으면 strike += 1
       for (let i = 0; i < answer.length; i++) {
-        const index = value.indexOf(answer[i]);
+        const index = value.indexOf(answer[i]); // answer[index]를 value에서 찾아본다. 겹치는게 있으면 indexOf가 -1보다 크다. // 겹치는게 없으면 -1
         if (index > -1) { // 일치하는 숫자 발견
           if (index === i) { // 자릿수도 같음
             strike += 1;
