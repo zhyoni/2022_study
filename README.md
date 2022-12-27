@@ -28,6 +28,7 @@
 * 이벤트 버블링 [bubbling.html](javaScript/7.틱택토%20게임/bubbling.html)
 * Math.random() / 배열(new Set, includes, join, split,splice) [study02.md](javaScript/study02.md)
 * forEach, map, fill [study03.md](javaScript/study03.md)
+* 피셔-예이츠 셔플 알고리즘, sort(), slice() [study04.md](javaScript/study04.md)
   
 
 
