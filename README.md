@@ -29,7 +29,8 @@
 * Math.random() / 배열(new Set, includes, join, split,splice) [study02.md](javaScript/study02.md)
 * forEach, map, fill [study03.md](javaScript/study03.md)
 * 피셔-예이츠 셔플 알고리즘, sort(), slice() [study04.md](javaScript/study04.md)
-* flag변수, location.href 와 location.replace 차이점, location.reload() [study04.md](javaScript/study04.md)
+* flag변수, location.href 와 location.replace 차이점, location.reload() [study05.md](javaScript/study05.md)
+* classList, 평균구하기,reduce() [study06.md](javaScript/study06.md)
   
 
 
