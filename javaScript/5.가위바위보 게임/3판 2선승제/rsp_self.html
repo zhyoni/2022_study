@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>가위바위보 게임</title>
+  <style>
+    #computer {
+      width: 165px;
+      height: 200px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="computer"></div>
+  <div>
+    <button id="scissors" class="btn">가위</button>
+    <button id="rock" class="btn">바위</button>
+    <button id="paper" class="btn">보</button>
+    <button type="button" onClick="reloadPage()">다시하기</button>
+  </div>
+  <div id="score">0</div>
+  <script>
+    const $computer = document.querySelector('#computer');
+    const $scissors = document.querySelector('#scissors');
+    const $rock = document.querySelector('#rock');
+    const $paper = document.querySelector('#paper');
+    const $score = document.querySelector('#score');
+    const imgUrl = '../rsp.png';
+    $computer.style.background = `url(${imgUrl}) -600px 0 / auto 200px`;
+    const rspX = {
+      scissors: '0px',
+      rock: '-230px',
+      paper: '440px',
+    }
+
+    let computerChoice = 'scissors';
+    const changeComputerHand = () => {
+      if (computerChoice === 'scissors') {
+        computerChoice = 'rock';
+      } else if (computerChoice === 'rock') {
+        computerChoice = 'paper';
+      } else if (computerChoice === 'paper') {
+        computerChoice = 'scissors';
+      }
+      $computer.style.background = `url(${imgUrl}) ${rspX[computerChoice]} 0 / auto 200px`
+    }
+
+    let intervalId = setInterval(changeComputerHand, 50);
+    /*
+          가위 | 바위 | 보
+    가위| 0      1      2
+    바위| -1     0      1
+    보  | -2     -1       0
+
+    가위1 가위1 = 1-1=0
+    가위1 바위0 = 1-0=1
+    가위1 보-1 = 1-(-1) = 2
+    바위0 가위1 = 0-1 = -1
+    바위0 보-1 = 0-(-1)=1
+    보-1 가위1 = -1-1= -2
+    보-1 바위0 = -1-0= -1
+    내가 이긴경우 -1 2
+    내가 진경우 1 -2
+    비긴 경우 0
+
+      */
+    const scoreTable = {
+      rock: 0,
+      scissors: 1,
+      paper: -1,
+    }
+
+    let clickable = true; // (true false) 참 거짓으로 실행하는지 하지않는지 결정해주는 변수를 보통 flag변수라고 표현한다.
+    let me = 0;
+    let computer = 0;
+    const clickButton = () => {
+      if (clickable) {
+        clearInterval(intervalId);
+        clickable = false;
+        // 점수 계산 및 화면 표시
+        const myChoice = event.target.textContent === '바위'
+          ? 'rock'
+          : event.target.textContent === '가위'
+            ? 'scissors'
+            : 'paper';
+        const myScore = scoreTable[myChoice];
+        const computerScore = scoreTable[computerChoice];
+        const diff = myScore - computerScore;
+        console.log(computerChoice, myChoice, myScore, computerScore, diff)
+
+        let message;
+        if ([2, -1].includes(diff)) {
+          me += 1;
+          message = '승리';
+        } else if ([-2, 1].includes(diff)) {
+          computer += 1;
+          message = '패배';
+        } else {
+          message = '무승부';
+        }
+        // 3판 2선승제
+        if (me === 3) {
+          $score.textContent = `나의 승리! ${me} : ${computer}`;
+          clickable = false;
+        } else if (computer === 3) {
+          $score.textContent = `컴퓨터의 승리! ${me} : ${computer}`;
+          clickable = false;
+        } else {
+          $score.textContent = `${message} ${me} : ${computer}`;
+          setTimeout(() => {
+            clickable = true;
+            intervalId = setInterval(changeComputerHand, 50);
+          }, 1000);
+        }
+      }
+    };
+
+    $scissors.addEventListener('click', clickButton);
+    $rock.addEventListener('click', clickButton);
+    $paper.addEventListener('click', clickButton);
+    function reloadPage() {
+      window.location.reload();
+    }
+
+  </script>
+</body>
+
+</html>
