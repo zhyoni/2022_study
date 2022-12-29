@@ -25,12 +25,13 @@
 
 ##### study
 * 고차함수 / if문 중첩 줄이기 [study01.md](javaScript/study01.md)
-* 이벤트 버블링 [bubbling.html](javaScript/7.틱택토%20게임/bubbling.html)
 * Math.random() / 배열(new Set, includes, join, split,splice) [study02.md](javaScript/study02.md)
 * forEach, map, fill [study03.md](javaScript/study03.md)
 * 피셔-예이츠 셔플 알고리즘, sort(), slice() [study04.md](javaScript/study04.md)
 * flag변수, location.href 와 location.replace 차이점, location.reload() [study05.md](javaScript/study05.md)
 * classList, 평균구하기,reduce() [study06.md](javaScript/study06.md)
+* 구조분해 할당, 이벤트 버블링(bubbling), event.target[study07.md](javaScript/study07.md)
+* 이벤트 버블링 [bubbling.html](javaScript/7.틱택토%20게임/bubbling.html)
   
 
 
