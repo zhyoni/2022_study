@@ -6,6 +6,7 @@
 ```javascript
 // 객체에 대한 구조분해 할당
 // 객체 내부의 속성과 할당하는 변수명이 같아야 한다.
+// 여러 개의 속성을 동시에 변수에 할당할 수도 있다.
   const { body } = document; // === const body = document.body; 
 
 /*---------------------------------------------------------------*/
@@ -63,30 +64,6 @@
 
 <br>
 
-#### 💭 이차원 배열
-##### 배열안에 배열이 들어있다.
-
-<br>
-
-```javascript
-// 5(행)x4(열)의 이차원 배열을 만들고 배열의 요소는 모두 1로 만든다.
-const array = [];
-for (let i = 0; i < 5; i++) {
-  const cell = [];
-  for (let j = 0; j < 4; j++) {
-    cell.push(1)
-  }
-  array.push(cell);
-}
-/*
-    [1, 1, 1, 1]
-    [1, 1, 1, 1]
-    [1, 1, 1, 1]
-    [1, 1, 1, 1]
-    [1, 1, 1, 1]
-*/
-
-```
 #### 💭 이벤트 버블링(bubbling)
 ##### 한 요소에 이벤트가 발생하면, 이 요소에 할당된 핸들러가 동작하고, 이어서 부모 요소의 핸들러가 동작합니다. 가장 최상단의 조상 요소를 만날 때까지 이 과정이 반복되면서 요소 각각에 할당된 핸들러가 동작합니다.
 <br>
@@ -156,5 +133,5 @@ form.onclick = function (event) {
 ##### ex.) 이벤트 캡처링을 사용하는 경우는 보통 팝업을 닫을때 팝업 바깥쪽을 클릭하면 팝업이 닫히게 되는 경우 사용을 많이 한다.
 참고: [https://ko.javascript.info/bubbling-and-capturing#ref-528]
 ```javascript
- // $table.addEventListener('click', callback, true);기본값 false true를 명시해주면 이벤트캡처링이 된다.
+ // 태그.addEventListener('click',()=>{}, true);기본값 false true를 명시해주면 이벤트캡처링이 된다.
 ```
