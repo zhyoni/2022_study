@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이차원 배열 다루기_틱택도 게임</title>
+  <style>
+    table {
+      border-collapse: collapse
+    }
+
+    td {
+      border: 1px solid #000;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    const { body } = document; // 구조분해 할당 // const body = document.body;
+    const $table = document.createElement('table');
+    const $result = document.createElement('div');
+
+    const rows = [];
+    let turn = 'O';
+
+    // rows
+    // [
+    // [$td, $td, $td]
+    // [$td, $td, $td]
+    // [$td, $td, $td]
+    //]
+
+    const callback = (event) => {
+
+      if (event.target.textContent !== '') { // 비어있지않으면? // 칸이 이미 채워져 있나?
+        console.log('빈칸이 아닙니다.')
+        return;
+      }
+      // 빈칸이면?
+      console.log('빈칸입니다.')
+      event.target.textContent = turn; // 빈칸 채워주고
+      // 턴 넘기기
+      turn = turn === 'X' ? 'O' : 'X';
+      // if (turn === 'O') {
+      //   turn = 'X';
+      // } else if (turn === 'X') {
+      //   turn = 'O';
+      // }
+    };
+
+    for (let i = 0; i < 3; i++) {
+      const $tr = document.createElement('tr');
+      const cells = [];
+      for (let j = 0; j < 3; j++) {
+        const $td = document.createElement('td');
+        cells.push($td);
+        $td.addEventListener('click', callback);
+        $tr.appendChild($td);
+      }
+      rows.push(cells);
+      $table.appendChild($tr);
+    }
+    body.appendChild($table);
+    body.appendChild($result);
+
+    console.log(rows);
+
+
+
+
+
+
+
+
+
+
+
+
+  </script>
+</body>
+
+</html>

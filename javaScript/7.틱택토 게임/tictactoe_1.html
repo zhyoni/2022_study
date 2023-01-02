@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이차원 배열 다루기_틱택도 게임</title>
+  <style>
+    table {
+      border-collapse: collapse
+    }
+
+    td {
+      border: 1px solid #000;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    // 이차원 배열 
+    // 배열안에 배열이 들어있다.
+    const { body } = document; // 구조분해 할당 // const body = document.body;
+    const $table = document.createElement('table');
+    const $result = document.createElement('div');
+
+    const rows = [];
+    let turn = 'O';
+
+    // rows
+    // [
+    // [$td, $td, $td]
+    // [$td, $td, $td]
+    // [$td, $td, $td]
+    //]
+
+    for (let i = 0; i < 3; i++) {
+      const $tr = document.createElement('tr');
+      const cells = [];
+      for (let j = 0; j < 3; j++) {
+        const $td = document.createElement('td');
+        cells.push($td);
+
+        $td.addEventListener('click', (event) => {
+          // 칸에 글자가 있나?
+          if (event.target.textContent) return; // 칸에 이미 글자가 들어있으면 함수 멈추기.
+          event.target.textContent = turn;
+          // 승부 확인
+          // 턴 넘기기
+          if (turn === 'O') {
+            turn = 'X';
+          } else if (turn === 'X') {
+            turn = 'O';
+          }
+        })
+        $tr.appendChild($td);
+      }
+      rows.push(cells);
+      $table.appendChild($tr);
+    }
+    body.appendChild($table);
+    body.appendChild($result);
+
+    console.log(rows);
+
+
+  
+
+
+
+
+
+
+
+
+
+  </script>
+</body>
+
+</html>

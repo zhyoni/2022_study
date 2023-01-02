@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이차원 배열 다루기_틱택도 게임(컴퓨터의 턴 만들기)</title>
+  <style>
+    table {
+      border-collapse: collapse
+    }
+
+    td {
+      border: 1px solid #000;
+      width: 50px;
+      height: 50px;
+      text-align: center;
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <script>
+    const { body } = document; // 구조분해 할당 // const body = document.body;
+    const $table = document.createElement('table');
+    const $result = document.createElement('div');
+
+    const rows = [];
+    let turn = 'O';
+
+    // rows
+    //[  
+    // [$td, $td, $td] 
+    // [$td, $td, $td] 
+    // [$td, $td, $td] 
+    //]
+
+    const checkWinner = (target) => {
+      let rowIndex = target.parentNode.rowIndex; // tr은 rowIndex를 가지고 있다.
+      let cellIndex = target.cellIndex; // td는 cellIndex를 가지고 있다.
+      // 세 칸 다 채워졌나?
+      let hasWinner = false; // 보통 검사할때는 처음에 false로 시작하면 된다.
+
+      // 가로줄 검사
+      if (
+        rows[rowIndex][0].textContent === turn &&
+        rows[rowIndex][1].textContent === turn &&
+        rows[rowIndex][2].textContent === turn) {
+        hasWinner = true;
+      }
+      // 세로줄 검사
+      if (
+        rows[0][cellIndex].textContent === turn &&
+        rows[1][cellIndex].textContent === turn &&
+        rows[2][cellIndex].textContent === turn) {
+        hasWinner = true;
+      }
+      // 대각선 검사
+      if (
+        rows[0][0].textContent === turn &&
+        rows[1][1].textContent === turn &&
+        rows[2][2].textContent === turn) {
+        hasWinner = true;
+      }
+      if (
+        rows[0][2].textContent === turn &&
+        rows[1][1].textContent === turn &&
+        rows[2][0].textContent === turn) {
+        hasWinner = true;
+      }
+      return hasWinner;
+    }
+
+    const checkWinnerAndDraw = (target) => {
+      const hasWinner = checkWinner(target);
+      // 승자가 있으면
+      if (hasWinner) {
+        $result.textContent = `${turn}님이 승리!`
+        $table.removeEventListener('click', callback);
+        return;
+      }
+      // 승자가 없으면
+      const draw = rows.flat().every((cell) => cell.textContent);
+      if (draw) {
+        $result.textContent = `무승부`
+        return;
+      }
+      // 턴 넘기기
+      turn = turn === 'X' ? 'O' : 'X';
+    }
+
+    let clickable = true;
+    const callback = (event) => {
+      if (!clickable) {
+        return;
+      }
+      if (event.target.textContent !== '') { // 비어있지않으면? // 칸이 이미 채워져 있나?
+        console.log('빈칸이 아닙니다.')
+        return;
+      }
+      // 빈칸이면?
+      console.log('빈칸입니다.')
+      event.target.textContent = turn; // 빈칸 채워주고
+
+      // 승부판단하기
+      checkWinnerAndDraw(event.target);
+      // const hasWinner = checkWinner(event.target);
+      // if (hasWinner) {
+      //   $result.textContent = `${turn}님이 승리!`
+      //   $table.removeEventListener('click', callback);
+      //   return;
+      // };
+      // // 승자가 없으면
+      // // 무승부 검사 하나라도 비어있으면 9번 모두 순회하지않고 즉시 종료
+      // let draw = rows.flat().every((cell) => cell.textContent);
+      // if (draw) {
+      //   $result.textContent = `무승부!`;
+      //   return;
+      // }
+      // // 턴 넘기기
+      // turn = turn === 'X' ? 'O' : 'X';
+
+      if (turn === 'X') {
+        clickable = false;
+        setTimeout(() => {
+          const emptyCells = rows.flat().filter((v) => !v.textContent);
+          const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+          randomCell.textContent = 'X';
+          const hasWinner = checkWinner(randomCell);
+          checkWinnerAndDraw(event.target);
+          clickable = true;
+        }, 1000)
+      }
+    };
+
+    for (let i = 0; i < 3; i++) {
+      const $tr = document.createElement('tr');
+      const cells = [];
+      for (let j = 0; j < 3; j++) {
+        const $td = document.createElement('td');
+        cells.push($td);
+        $tr.appendChild($td);
+      }
+      rows.push(cells);
+      $table.appendChild($tr);
+    }
+
+    $table.addEventListener('click', callback);// html현상인 이벤트 버블링을 이용함.
+
+    body.appendChild($table);
+    body.appendChild($result);
+
+    console.log(rows);
+
+
+  </script>
+</body>
+
+</html>
