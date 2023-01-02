@@ -32,7 +32,7 @@
 * classList, 평균구하기,reduce() [study06.md](javaScript/study06.md)
 * 구조분해 할당, 이벤트 버블링(bubbling), event.target[study07.md](javaScript/study07.md)
 * 이벤트 버블링 [bubbling.html](javaScript/7.틱택토%20게임/bubbling.html)
-* 이차원 배열, 유사배열, from(), every(), some(), flat(), filter(), rowIndex와 cellIndex[study08.md](javaScript/study08.md)
+* 이차원 배열, 유사배열, from(), every(), some(), flat(), filter(), rowIndex와 cellIndex [study08.md](javaScript/study08.md)
   
 
 
