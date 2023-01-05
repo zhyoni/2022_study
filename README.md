@@ -15,6 +15,12 @@
 * tictactoe(틱텍토 게임) [tictactoe.html](javaScript/7.틱택토%20게임/tictactoe_self.html)
 * text-rpg(텍스트 RPG 게임) [text-rpg.html](javaScript/8.텍스트%20RPG%20게임/text-rpg.html)
   * text-rpg-class(텍스트 RPG 게임(class)) [text-rpg-class.html](javaScript/8.텍스트%20RPG%20게임/text-rpg-class.html)
+  * class로 재구성 [text-rpg-class1.html](javaScript/8.텍스트%20RPG%20게임/text-rpg-class1.html)
+  * class로 재구성 [text-rpg-class2.html](javaScript/8.텍스트%20RPG%20게임/text-rpg-class2.html)
+  * class로 재구성 [text-rpg-class3.html](javaScript/8.텍스트%20RPG%20게임/text-rpg-class3.html)
+  * class상속 [text-rpg-class4.html](javaScript/8.텍스트%20RPG%20게임/text-rpg-class4.html)
+  * class self Math.min() [text-rpg-class5.html](javaScript/8.텍스트%20RPG%20게임/text-rpg-class5.html)
+  * class [class.html](javaScript/8.텍스트%20RPG%20게임/class.html)
 * concentration(카드 짝맞추기 게임) [concentration.html](javaScript/9.카드%20짝맞추기%20게임/concentration.html)
   * (호출스택,태스크큐 이벤트 루프 분석 버그 해결하기) [concentration-self.html](javaScript/9.카드%20짝맞추기%20게임/concentration-self.html)
 * mine-sweeper(지뢰찾기) [mine-sweeper.html](javaScript/10.지뢰찾기/mine-sweeper.html)
@@ -33,6 +39,8 @@
 * 구조분해 할당, 이벤트 버블링(bubbling), event.target[study07.md](javaScript/study07.md)
 * 이벤트 버블링 [bubbling.html](javaScript/7.틱택토%20게임/bubbling.html)
 * 이차원 배열, 유사배열, from(), every(), some(), flat(), filter(), rowIndex와 cellIndex [study08.md](javaScript/study08.md)
+* 깊은 복사와 얕은 복사[study09.md](javaScript/study09.md)
+<!-- * class[study10.md](javaScript/study10.md) -->
   
 
 

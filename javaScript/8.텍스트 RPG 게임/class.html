@@ -28,21 +28,23 @@
 
     }
 
+    // 클래스의 상속
     class Programmer extends Person {
       constructor(name, age, languages) {
-        super(name, age);
+        super(name, age); // super() 부모클래스의 생성자 호출
         this.languages = languages;
       }
       writeCode() {
         console.log(this.languages.join() + '(으)로 코딩해요.')
       }
     }
+
     const programmer = new Programmer(
       '효니',
       32,
       ['html', 'css', 'js']
     );
-    programmer.writeCode();
+    programmer.writeCode(); // html,css,js(으)로 코딩해요.
   </script>
 </body>
 
